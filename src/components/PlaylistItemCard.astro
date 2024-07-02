@@ -27,20 +27,22 @@ const artistString = artists.join(",");
     hover:shodow-xl  bg-zinc-500/30
     w-44
     flex-col"
+    transition:name=`playlist ${id} box`
 >
     <picture class="aspect-square w-full flex-none">
         <img
             class="object-cover w-full h-full rounded-md"
             src={cover}
             alt={`Cover ${title} de ${artistString}`}
+            transition:name=`playlist ${id} image`
         />
     </picture>
 
-    <div class="flex flex-auto flex-col p-x-3">
-        <h2 class="text-sm">
+    <div class="flex flex-auto flex-col p-x-3" >
+        <h4 class="text-sm "transition:name=`playlist ${id} title`>
             {title}
-        </h2>
-        <span class="text-xs text-gray-400">
+        </h4>
+        <span class="text-xs text-gray-400" transition:name=`playlist ${playlist?.id} artists`>
             {artistString}
         </span>
     </div>
