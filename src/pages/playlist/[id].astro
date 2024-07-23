@@ -15,7 +15,7 @@ const playListSong = songs.find((song) => song.albumId == playlist?.albumId);
 <Layout title="Spotify Clone">
     <div id="playlist-container" class="relative transition-all" transition:name=`playlist ${id} box`>
         <header class="flex flex-row gap-8 px-6 mt-12">
-            <picture class="aspect-square w-full flex-none w-52 h-52">
+            <picture class="aspect-square flex-none w-52 h-52">
                 <img
                     class="object-cover w-full h-full shadow-lg"
                     src={playlist?.cover}
