@@ -1,5 +1,5 @@
 
-import { usePLayerStore } from "@/store/playerStore";
+import { usePlayerStore } from "@/store/playerStore";
 import { useEffect, useRef, } from "react";
 import { Slider } from "./Slider";
 
@@ -38,12 +38,50 @@ const CurrentSong = ({ image, title, artists }) => {
         </div>
     )
 };
+
+const VolumeControl = () => {
+    const volume = usePlayerStore(state => state.volume);
+    const setVolume = usePlayerStore(state => state.setVolume);
+    const previousVolumeRef = useRef(volume);
+
+    const isVolumeSilenced = volume < 0.1;
+
+    const handleClickVolumen = () => {
+        if (isVolumeSilenced) {
+            setVolume(previousVolumeRef.current);
+        } else {
+            previousVolumeRef.current = volume
+            setVolume(0);
+        }
+    };
+
+    return (
+        <div className="flex justify-center gap-x-2">
+            <button onClick={handleClickVolumen}>
+                {isVolumeSilenced ? <VolumeSilence /> : <Volume/>}
+            </button>
+            <Slider
+                defaultValue={[100]}
+                max={100}
+                min={0}
+                className="w-[95px]"
+                value={[volume * 100]}
+                onValueChange={(value) => {
+                    const [newVolume] = value
+                    const volumeValue = newVolume / 100
+                    setVolume(volumeValue)
+                }} />
+        </div>
+    )
+};
+
+
 export function Player() {
 
     //Estado GLOBAL de la musica si esta reproduciendo
-    const { currentMusic, isPlaying, setIsPlaying } = usePLayerStore(state => state);
-
+    const { currentMusic, isPlaying, setIsPlaying, volume } = usePlayerStore(state => state);
     const audioRef = useRef();
+    const volumeRef = useRef(volume);
 
     useEffect(() => {
         if (audioRef.current) {
@@ -51,23 +89,30 @@ export function Player() {
         }
     }, [isPlaying]);
 
+
     useEffect(() => {
-        const { song, playlist, songs } = currentMusic
+        if (audioRef.current) {
+            audioRef.current.volume = volume
+        }
+    }, [volume]);
+
+    useEffect(() => {
+        const { song, playlist } = currentMusic
         if (song) {
             const src = `/music/${playlist?.id}/0${song.id}.mp3`
             audioRef.current.src = src
+            audioRef.current.volume = volumeRef.current
             audioRef.current.play()
         }
     }, [currentMusic])
 
     //Función para controlar el play y stop de la musica.
     const handleClick = () => {
-        // Se reporducira la musica
         if (isPlaying) {
             audioRef.current.pause();
         } else {
             audioRef.current.play();
-            audioRef.current.volume = 0.1
+            audioRef.current.volume = volumeRef.current;
         }
         setIsPlaying(!isPlaying);
     };
@@ -78,7 +123,7 @@ export function Player() {
                 <CurrentSong {...currentMusic.song} />
             </div>
             <div className=" grid place-content-center gap-4 flex-1">
-            <div className="flex justify-center flex-col items-center">
+                <div className="flex justify-center flex-col items-center">
                     <button
                         type="button"
                         className="bg-white rounded-full p-2"
@@ -90,15 +135,7 @@ export function Player() {
             </div>
 
             <div className="grid place-content-center">
-                <Slider 
-                defaultValue={[100]} 
-                max={100} 
-                min={0}
-                className="w-[95px]"
-                onValueChange={(value) => {
-                    const [newVolume] = value
-                    audioRef.current.volume = newVolume / 100
-                }} />
+                <VolumeControl />
             </div>
         </div>
     )

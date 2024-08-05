@@ -1,10 +1,10 @@
 
 import { Pause, Play } from "./Player"
-import { usePLayerStore } from "@/store/playerStore";
+import { usePlayerStore } from "@/store/playerStore";
 
 export function CardPlayButton({ id }) {
 
-    const { currentMusic, isPlaying, setIsPlaying, setCurrentMusic } = usePLayerStore(state => state);
+    const { currentMusic, isPlaying, setIsPlaying, setCurrentMusic } = usePlayerStore(state => state);
 
     const isPlayingPlayList = isPlaying && currentMusic?.playlist.id == id;
 
